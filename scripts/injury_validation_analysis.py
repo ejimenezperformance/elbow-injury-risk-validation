@@ -75,8 +75,8 @@ def plot_comparison(df: pd.DataFrame, lang: str) -> None:
             cap.set_color(EP_COLORS["navy"])
             cap.set_linewidth(1.3)
         for median in bp["medians"]:
-            median.set_color(EP_COLORS["gold"])
-            median.set_linewidth(2.5)
+            median.set_color(EP_COLORS["off_white"])
+            median.set_linewidth(2.8)
         for flier in bp["fliers"]:
             flier.set(marker="o", markerfacecolor=EP_COLORS["off_white"],
                       markeredgecolor=EP_COLORS["navy"], markersize=6)
