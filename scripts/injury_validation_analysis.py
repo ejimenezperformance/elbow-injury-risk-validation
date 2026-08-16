@@ -66,6 +66,20 @@ def plot_comparison(df: pd.DataFrame, lang: str) -> None:
         bp["boxes"][1].set_facecolor(EP_COLORS["red"])
         for box in bp["boxes"]:
             box.set_alpha(0.75)
+        # Colores de marca en vez de los defaults de matplotlib (bigotes/mediana/outliers
+        # negros y naranja no existen en la paleta EP - se ven fuera de lugar)
+        for whisker in bp["whiskers"]:
+            whisker.set_color(EP_COLORS["navy"])
+            whisker.set_linewidth(1.3)
+        for cap in bp["caps"]:
+            cap.set_color(EP_COLORS["navy"])
+            cap.set_linewidth(1.3)
+        for median in bp["medians"]:
+            median.set_color(EP_COLORS["gold"])
+            median.set_linewidth(2.5)
+        for flier in bp["fliers"]:
+            flier.set(marker="o", markerfacecolor=EP_COLORS["off_white"],
+                      markeredgecolor=EP_COLORS["navy"], markersize=6)
         ax.set_title(title_en if lang == "en" else title_es, fontsize=12,
                      color=EP_COLORS["subtitle_grey"], pad=8)
         if FONT_TICK:
@@ -92,7 +106,7 @@ def plot_comparison(df: pd.DataFrame, lang: str) -> None:
         add_source(fig, "Fuente: Baseball Savant + base de datos de cirugías Tommy John de Roegele")
         fname = OUTPUT_DIR / "injury_comparison_ES.png"
 
-    fig.tight_layout(rect=[0, 0.01, 1, 0.88])
+    fig.tight_layout(rect=[0, 0.01, 1, 0.82])
     plt.savefig(fname, dpi=200, facecolor=EP_COLORS["off_white"])
     plt.close(fig)
     print(f"Guardado: {fname}")
