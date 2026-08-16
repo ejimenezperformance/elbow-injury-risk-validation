@@ -74,8 +74,10 @@ def plot_comparison(df: pd.DataFrame, lang: str) -> None:
         for cap in bp["caps"]:
             cap.set_color(EP_COLORS["navy"])
             cap.set_linewidth(1.3)
-        for median in bp["medians"]:
-            median.set_color(EP_COLORS["off_white"])
+        for i, median in enumerate(bp["medians"]):
+            # Color de mediana distinto por caja: blanco sobre navy (oscuro, alto contraste),
+            # navy sobre rojo/salmón (más claro - blanco ahí se perdía, poco contraste)
+            median.set_color(EP_COLORS["off_white"] if i == 0 else EP_COLORS["navy"])
             median.set_linewidth(2.8)
         for flier in bp["fliers"]:
             flier.set(marker="o", markerfacecolor=EP_COLORS["off_white"],
