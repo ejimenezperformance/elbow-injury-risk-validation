@@ -47,6 +47,23 @@ always presented as a literature-based estimate, not a validated
 predictor — this project is the validation step, and the result is
 negative.
 
+## Statistical confirmation
+
+Descriptive comparison is confirmed by formal tests, not just visual
+inspection:
+
+| Test | Result |
+|---|---|
+| Welch's t-test, arm angle | t=0.109, **p=0.913** (not significant) |
+| Welch's t-test, velocity | t=0.871, **p=0.385** (not significant) |
+| Logistic regression (arm angle + velocity + pitch count → TJ history) | Model LLR p=0.335 (not significant); Pseudo R²=0.015 |
+
+The logistic regression combines all three variables into a single model
+predicting Tommy John history — and the model as a whole is not
+statistically distinguishable from a model with no predictors at all.
+No individual coefficient reaches significance either (all p>0.1). The
+full statistical output is in `outputs/statistical_tests.txt`.
+
 ## Why this matters
 
 This is a genuinely useful finding, not a wasted effort. It says: a
@@ -103,7 +120,8 @@ elbow-injury-risk-validation/
 │   └── ep_chart_style.py
 └── outputs/
     ├── injury_comparison_{EN,ES}.png
-    └── per_pitcher_injury_comparison.csv
+    ├── per_pitcher_injury_comparison.csv
+    └── statistical_tests.txt
 ```
 
 ## Reproduce the analysis
@@ -130,10 +148,11 @@ python scripts/injury_validation_analysis.py
   analysis does not separate "arm angle that preceded injury" from "arm
   angle after recovery and mechanical adjustment," which could dilute a
   real signal if one exists.
-- **Small effect sizes were not tested for statistical significance**
-  (e.g., a formal t-test or logistic regression) — the reported
-  differences are descriptive, and given how small they are, are very
-  unlikely to be significant regardless.
+- **Small effect sizes were formally tested for statistical significance**
+  (Welch's t-tests and a logistic regression combining all three
+  candidate predictors) — none reached significance, and the full
+  logistic model's Pseudo R² was 0.015, confirming the descriptive
+  comparison was not merely underpowered visual inspection.
 - **This tests one proxy (arm angle-based torque) against one outcome
   (any TJ history, ever).** It does not test whether arm angle predicts
   *when* an injury occurs, or test other candidate risk factors (workload,

@@ -46,6 +46,24 @@ en riesgo de los sanos en este dataset.** El proxy siempre se presentó
 como una estimación basada en literatura, no un predictor validado —
 este proyecto es el paso de validación, y el resultado es negativo.
 
+## Confirmación estadística
+
+La comparación descriptiva se confirma con pruebas formales, no solo
+inspección visual:
+
+| Prueba | Resultado |
+|---|---|
+| t-test de Welch, arm angle | t=0.109, **p=0.913** (no significativo) |
+| t-test de Welch, velocidad | t=0.871, **p=0.385** (no significativo) |
+| Regresión logística (arm angle + velocidad + volumen de pitcheos → historial TJ) | Modelo LLR p=0.335 (no significativo); Pseudo R²=0.015 |
+
+La regresión logística combina las tres variables en un solo modelo
+prediciendo historial de Tommy John — y el modelo completo no es
+estadísticamente distinguible de un modelo sin predictores en absoluto.
+Ningún coeficiente individual alcanza significancia tampoco (todos
+p>0.1). El output estadístico completo está en
+`outputs/statistical_tests.txt`.
+
 ## Por qué esto importa
 
 Este es un hallazgo genuinamente útil, no un esfuerzo desperdiciado.
@@ -106,7 +124,8 @@ elbow-injury-risk-validation/
 │   └── ep_chart_style.py
 └── outputs/
     ├── injury_comparison_{EN,ES}.png
-    └── per_pitcher_injury_comparison.csv
+    ├── per_pitcher_injury_comparison.csv
+    └── statistical_tests.txt
 ```
 
 ## Reproducir el análisis
@@ -133,10 +152,12 @@ python scripts/injury_validation_analysis.py
   — este análisis no separa "arm angle que precedió la lesión" de "arm
   angle después de recuperación y ajuste mecánico", lo cual podría
   diluir una señal real si existe.
-- **Los tamaños de efecto pequeños no se probaron para significancia
-  estadística** (ej. una prueba t formal o regresión logística) — las
-  diferencias reportadas son descriptivas, y dado qué tan pequeñas son,
-  es muy improbable que sean significativas de cualquier forma.
+- **Los tamaños de efecto pequeños se probaron formalmente para
+  significancia estadística** (t-tests de Welch y una regresión
+  logística combinando los tres predictores candidatos) — ninguno
+  alcanzó significancia, y el Pseudo R² del modelo logístico completo
+  fue 0.015, confirmando que la comparación descriptiva no era solo
+  inspección visual con poca potencia estadística.
 - **Esto prueba un proxy (torque basado en arm angle) contra un
   resultado (cualquier historial de TJ, alguna vez).** No prueba si el
   arm angle predice *cuándo* ocurre una lesión, ni prueba otros factores

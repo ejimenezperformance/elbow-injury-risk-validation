@@ -126,3 +126,41 @@ if __name__ == "__main__":
         plot_comparison(df, lang)
 
     df.to_csv(OUTPUT_DIR / "per_pitcher_injury_comparison.csv", index=False)
+
+    # ------------------------------------------------------------------------------
+    # Estadística inferencial: ¿las diferencias observadas son significativas?
+    # ------------------------------------------------------------------
+    from scipy import stats
+    import statsmodels.api as sm
+
+    tj = df[df["has_tj_history"]]
+    no_tj = df[~df["has_tj_history"]]
+
+    print("\n=== Pruebas t (Welch, varianzas desiguales) ===")
+    t_angle, p_angle = stats.ttest_ind(tj["arm_angle"].dropna(), no_tj["arm_angle"].dropna(), equal_var=False)
+    t_vel, p_vel = stats.ttest_ind(tj["ff_avg_speed"].dropna(), no_tj["ff_avg_speed"].dropna(), equal_var=False)
+    print(f"  Arm angle:  t={t_angle:.3f}, p={p_angle:.3f} {'(significativo, p<0.05)' if p_angle < 0.05 else '(NO significativo)'}")
+    print(f"  Velocity:   t={t_vel:.3f}, p={p_vel:.3f} {'(significativo, p<0.05)' if p_vel < 0.05 else '(NO significativo)'}")
+
+    print("\n=== Regresión logística (has_tj_history ~ arm_angle + velocity + pitch_count) ===")
+    model_df = df[["has_tj_history", "arm_angle", "ff_avg_speed", "pitch_count"]].dropna()
+    X = model_df[["arm_angle", "ff_avg_speed", "pitch_count"]]
+    X = (X - X.mean()) / X.std()  # estandarizar para coeficientes comparables
+    X = sm.add_constant(X)
+    y = model_df["has_tj_history"].astype(int)
+
+    logit_model = sm.Logit(y, X).fit(disp=0)
+    print(logit_model.summary())
+
+    pseudo_r2 = logit_model.prsquared
+    print(f"\nPseudo R² (McFadden): {pseudo_r2:.4f}")
+
+    # Guardar resultados estadísticos para incluir en el README
+    with open(OUTPUT_DIR / "statistical_tests.txt", "w") as f:
+        f.write("=== T-tests (Welch) ===\n")
+        f.write(f"Arm angle:  t={t_angle:.3f}, p={p_angle:.4f}\n")
+        f.write(f"Velocity:   t={t_vel:.3f}, p={p_vel:.4f}\n\n")
+        f.write("=== Logistic Regression ===\n")
+        f.write(str(logit_model.summary()))
+        f.write(f"\n\nPseudo R² (McFadden): {pseudo_r2:.4f}\n")
+    print(f"\nGuardado: {OUTPUT_DIR / 'statistical_tests.txt'}")
